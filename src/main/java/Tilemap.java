@@ -85,8 +85,20 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
     }
 
     public record Tiledef(@NotNull Raylib.Color color) {
+        void draw(int x, int y) {
+            Raylib.DrawRectangle(x, y, 10, 10, color);
+        }
     }
 
     public record TiledefWithCoords(int x, int y, @Nullable Tiledef tiledef) {
+        void draw() {
+            if (tiledef != null)
+                tiledef.draw(x, y);
+        }
+    }
+
+    void drawAll() {
+        for (var tile : this)
+            tile.draw();
     }
 }
