@@ -3,7 +3,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class Tilemap extends AbstractCollection<Tilemap.TiledefCoords> {
+public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
     private int width;
     private int height;
     private Tiledef chunk[];
@@ -27,7 +27,7 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefCoords> {
     }
 
     @Override
-    public boolean add(TiledefCoords tiledefCoords) {
+    public boolean add(TiledefWithCoords tiledefCoords) {
         boolean changed = get(tiledefCoords.x(), tiledefCoords.y()).equals(tiledefCoords.tiledef());
         set(tiledefCoords.x(), tiledefCoords.y(), tiledefCoords.tiledef());
         return changed;
@@ -39,8 +39,8 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefCoords> {
     }
 
     @Override
-    public Iterator<TiledefCoords> iterator() {
-        class TiledefCoordsIterator implements Iterator<TiledefCoords> {
+    public Iterator<TiledefWithCoords> iterator() {
+        class TiledefCoordsIterator implements Iterator<TiledefWithCoords> {
             Tilemap tilemap;
             int x = 0;
             int y = 0;
@@ -55,9 +55,9 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefCoords> {
             }
 
             @Override
-            public TiledefCoords next() {
+            public TiledefWithCoords next() {
                 var tiledef = tilemap.get(x, y);
-                var tiledefCoords = new Tilemap.TiledefCoords(x, y, tilemap.get(x, y));
+                var tiledefCoords = new TiledefWithCoords(x, y, tilemap.get(x, y));
                 if (++x >= width) {
                     x = 0;
                     ++y;
@@ -76,6 +76,6 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefCoords> {
     public record Tiledef(Raylib.Color color) {
     }
 
-    public record TiledefCoords(int x, int y, Tiledef tiledef) {
+    public record TiledefWithCoords(int x, int y, Tiledef tiledef) {
     }
 }
