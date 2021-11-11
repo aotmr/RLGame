@@ -3,11 +3,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * A two-dimensional array of Tiledefs.
+ *
+ * This appears as a collection of TiledefWithCoords, so iterating through
+ * a Tilemap also gives access to a Tiledef's location in the map.
+ */
 public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
     private int width;
     private int height;
-    private Tiledef chunk[];
+    private Tiledef[] chunk;
 
+    /**
+     * Constructs a tilemap with the given dimensions.
+     */
     public Tilemap(int width, int height) {
         if (width < 0) throw new IllegalArgumentException();
         if (height < 0) throw new IllegalArgumentException();
