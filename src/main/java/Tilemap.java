@@ -1,18 +1,19 @@
 import com.raylib.Raylib;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
  * A two-dimensional array of Tiledefs.
- *
+ * <p>
  * This appears as a collection of TiledefWithCoords, so iterating through
  * a Tilemap also gives access to a Tiledef's location in the map.
  */
 public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
-    private int width;
-    private int height;
-    private Tiledef[] chunk;
+    final private int width;
+    final private int height;
+    final private @Nullable Tiledef[] chunk;
 
     /**
      * Constructs a tilemap with the given dimensions.
@@ -25,19 +26,20 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
         this.chunk = new Tiledef[Math.multiplyExact(width, height)]; // throws if product overflows
     }
 
-    public Tiledef get(int x, int y) {
+    public @Nullable Tiledef get(int x, int y) {
         if (x < 0 || x >= width || y < 0 || y >= height) throw new IndexOutOfBoundsException();
         return chunk[y * width + x];
     }
 
-    public void set(int x, int y, Tiledef tiledef) {
+    public void set(int x, int y, @Nullable Tiledef tiledef) {
         if (x < 0 || x >= width || y < 0 || y >= height) throw new IndexOutOfBoundsException();
         chunk[y * width + x] = tiledef;
     }
 
     @Override
-    public boolean add(TiledefWithCoords tiledefCoords) {
-        boolean changed = get(tiledefCoords.x(), tiledefCoords.y()).equals(tiledefCoords.tiledef());
+    public boolean add(@NotNull TiledefWithCoords tiledefCoords) {
+        Tiledef last = get(tiledefCoords.x(), tiledefCoords.y());
+        boolean changed = Objects.equals(last, tiledefCoords.tiledef);
         set(tiledefCoords.x(), tiledefCoords.y(), tiledefCoords.tiledef());
         return changed;
     }
@@ -50,7 +52,7 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
     @Override
     public Iterator<TiledefWithCoords> iterator() {
         class TiledefCoordsIterator implements Iterator<TiledefWithCoords> {
-            Tilemap tilemap;
+            final Tilemap tilemap;
             int x = 0;
             int y = 0;
 
@@ -82,9 +84,9 @@ public class Tilemap extends AbstractCollection<Tilemap.TiledefWithCoords> {
         return new TiledefCoordsIterator(this);
     }
 
-    public record Tiledef(Raylib.Color color) {
+    public record Tiledef(@NotNull Raylib.Color color) {
     }
 
-    public record TiledefWithCoords(int x, int y, Tiledef tiledef) {
+    public record TiledefWithCoords(int x, int y, @Nullable Tiledef tiledef) {
     }
 }
