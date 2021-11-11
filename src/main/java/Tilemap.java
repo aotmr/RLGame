@@ -1,0 +1,81 @@
+import com.raylib.Raylib;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+
+public class Tilemap extends AbstractCollection<Tilemap.TiledefCoords> {
+    private int width;
+    private int height;
+    private Tiledef chunk[];
+
+    public Tilemap(int width, int height) {
+        if (width < 0) throw new IllegalArgumentException();
+        if (height < 0) throw new IllegalArgumentException();
+        this.width = width;
+        this.height = height;
+        this.chunk = new Tiledef[Math.multiplyExact(width, height)]; // throws if product overflows
+    }
+
+    public Tiledef get(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) throw new IndexOutOfBoundsException();
+        return chunk[y * width + x];
+    }
+
+    public void set(int x, int y, Tiledef tiledef) {
+        if (x < 0 || x >= width || y < 0 || y >= height) throw new IndexOutOfBoundsException();
+        chunk[y * width + x] = tiledef;
+    }
+
+    @Override
+    public boolean add(TiledefCoords tiledefCoords) {
+        boolean changed = get(tiledefCoords.x(), tiledefCoords.y()).equals(tiledefCoords.tiledef());
+        set(tiledefCoords.x(), tiledefCoords.y(), tiledefCoords.tiledef());
+        return changed;
+    }
+
+    @Override
+    public int size() {
+        return chunk.length;
+    }
+
+    @Override
+    public Iterator<TiledefCoords> iterator() {
+        class TiledefCoordsIterator implements Iterator<TiledefCoords> {
+            Tilemap tilemap;
+            int x = 0;
+            int y = 0;
+
+            TiledefCoordsIterator(@NotNull Tilemap tilemap) {
+                this.tilemap = tilemap;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return y < tilemap.height;
+            }
+
+            @Override
+            public TiledefCoords next() {
+                var tiledef = tilemap.get(x, y);
+                var tiledefCoords = new Tilemap.TiledefCoords(x, y, tilemap.get(x, y));
+                if (++x >= width) {
+                    x = 0;
+                    ++y;
+                }
+                return tiledefCoords;
+            }
+
+            @Override
+            public void remove() {
+                tilemap.set(x, y, null);
+            }
+        }
+        return new TiledefCoordsIterator(this);
+    }
+
+    public record Tiledef(Raylib.Color color) {
+    }
+
+    public record TiledefCoords(int x, int y, Tiledef tiledef) {
+    }
+}
