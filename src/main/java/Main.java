@@ -3,9 +3,12 @@ import com.raylib.Raylib;
 
 public class Main {
     public static void main(String[] args) {
-//        System.out.println("Hello, world!");
-        Raylib.InitWindow(800, 450, "Demo");
+        var tilemap = new Tilemap(10, 10);
+        for (var tile : tilemap) {
+            System.out.println(tile);
+        }
 
+        Raylib.InitWindow(800, 450, "Demo");
         while (!Raylib.WindowShouldClose()) {
             Raylib.ClearBackground(Jaylib.BLACK);
             Raylib.BeginDrawing();
