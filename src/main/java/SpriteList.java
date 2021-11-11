@@ -5,17 +5,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractList;
 
 public class SpriteList extends AbstractList<SpriteList.Sprite> {
-    public record Sprite(
-            float x, float y, float w, float h,
-            @NotNull Raylib.Color color,
-            @Nullable Raylib.Texture texture) {}
-
     final int FDATA_ROWS = 4;
     final int ODATA_ROWS = 2;
-
     int size;
     int capacity;
-
     float[] fdata;
     Object[] odata;
 
@@ -34,7 +27,7 @@ public class SpriteList extends AbstractList<SpriteList.Sprite> {
                 fdata[FDATA_ROWS * index + 2],
                 fdata[FDATA_ROWS * index + 3],
                 (Raylib.Color) odata[ODATA_ROWS * index + 0],
-        (Raylib.Texture)odata[ODATA_ROWS * index + 1]);
+                (Raylib.Texture) odata[ODATA_ROWS * index + 1]);
     }
 
     @Override
@@ -77,13 +70,16 @@ public class SpriteList extends AbstractList<SpriteList.Sprite> {
     }
 
     public void drawAll() {
-        for (var sprite : this) {
-            Raylib.DrawRectangle(
-                    Math.round(sprite.x()),
-                    Math.round(sprite.y()),
-                    Math.round(sprite.w()),
-                    Math.round(sprite.h()),
-                    sprite.color());
+        for (var sprite : this)
+            sprite.draw();
+    }
+
+    public record Sprite(
+            float x, float y, float w, float h,
+            @NotNull Raylib.Color color,
+            @Nullable Raylib.Texture texture) {
+        void draw() {
+            Raylib.DrawRectangle(Math.round(x), Math.round(y), Math.round(w), Math.round(h), color);
         }
     }
 
