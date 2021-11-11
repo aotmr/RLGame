@@ -6,13 +6,18 @@ import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+@SuppressWarnings("PointlessArithmeticExpression")
 public class SpriteList extends AbstractList<SpriteList.Sprite> {
     final int FDATA_ROWS = 4;
     final int ODATA_ROWS = 3;
-    int size;
-    int capacity;
-    float[] fdata;
+    private int size;
+    private int capacity;
+    private float[] fdata;
+    // TODO: I would rather implement this as parallel arrays of JNI objects
     Object[] odata;
+    // Cached sprite order for drawAllInOrder
+    private boolean drawCacheValid = false;
+    private Sprite[] drawCache = new Sprite[0];
 
     SpriteList(int capacity) {
         this.size = 0;
@@ -37,7 +42,7 @@ public class SpriteList extends AbstractList<SpriteList.Sprite> {
     public Sprite set(int index, Sprite element) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException();
-
+        drawCacheValid = false;
         var last = get(index);
         fdata[FDATA_ROWS * index + 0] = element.x();
         fdata[FDATA_ROWS * index + 1] = element.y();
@@ -51,6 +56,8 @@ public class SpriteList extends AbstractList<SpriteList.Sprite> {
 
     @Override
     public void add(int index, Sprite element) {
+        if (index < 0 || index > size + 1 || index > capacity)
+            throw new IndexOutOfBoundsException();
         if (index < size) {
             // shift elements to right
             System.arraycopy(
@@ -78,10 +85,13 @@ public class SpriteList extends AbstractList<SpriteList.Sprite> {
             sprite.draw();
     }
 
-    public void drawInOrder(Comparator<Sprite> comparator) {
-        Sprite[] sprites = this.toArray(new Sprite[0]);
-        Arrays.sort(sprites, comparator);
-        for (var sprite : sprites) {
+    public void drawAllInOrder(Comparator<Sprite> comparator) {
+        if (!drawCacheValid) {
+            drawCache = this.toArray(drawCache);
+            Arrays.sort(drawCache, comparator);
+            drawCacheValid = true;
+        }
+        for (var sprite : drawCache) {
             sprite.draw();
         }
     }
