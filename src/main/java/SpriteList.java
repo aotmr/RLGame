@@ -1,78 +1,24 @@
 import com.raylib.Raylib;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.Comparator;
 
-@SuppressWarnings("PointlessArithmeticExpression")
-public class SpriteList extends AbstractList<SpriteList.Sprite> {
-    final int FDATA_ROWS = 4;
-    final int ODATA_ROWS = 3;
-    private int size;
-    private int capacity;
-    private float[] fdata;
-    // TODO: I would rather implement this as parallel arrays of JNI objects
-    Object[] odata;
-    // Cached sprite order for drawAllInOrder
-    private boolean drawCacheValid = false;
-    private Sprite[] drawCache = new Sprite[0];
+public class SpriteList extends AbstractList<SpriteList.SpriteData> {
+    private static final int OBJECTSTRIDE = 3;
+    private static final int FLOATSTRIDE = 8;
+    int size;
+    int capacity;
+    private final float[] floatData;
+    private final Object[] objectData;
 
     SpriteList(int capacity) {
-        this.size = 0;
         this.capacity = capacity;
-        this.fdata = new float[FDATA_ROWS * capacity];
-        this.odata = new Object[ODATA_ROWS * capacity];
+        floatData = new float[FLOATSTRIDE * capacity];
+        objectData = new Object[OBJECTSTRIDE * capacity];
     }
 
     @Override
-    public Sprite get(int index) {
-        return new Sprite(
-                fdata[FDATA_ROWS * index + 0],
-                fdata[FDATA_ROWS * index + 1],
-                fdata[FDATA_ROWS * index + 2],
-                fdata[FDATA_ROWS * index + 3],
-                (Raylib.Color) odata[ODATA_ROWS * index + 0],
-                (Raylib.Texture) odata[ODATA_ROWS * index + 1],
-                (Raylib.Rectangle) odata[ODATA_ROWS * index + 2]);
-    }
-
-    @Override
-    public Sprite set(int index, Sprite element) {
-        if (index < 0 || index >= size)
-            throw new IndexOutOfBoundsException();
-        drawCacheValid = false;
-        var last = get(index);
-        fdata[FDATA_ROWS * index + 0] = element.x();
-        fdata[FDATA_ROWS * index + 1] = element.y();
-        fdata[FDATA_ROWS * index + 2] = element.w();
-        fdata[FDATA_ROWS * index + 3] = element.h();
-        odata[FDATA_ROWS * index + 0] = element.color();
-        odata[FDATA_ROWS * index + 1] = element.texture();
-        odata[FDATA_ROWS * index + 2] = element.rectangle();
-        return last;
-    }
-
-    @Override
-    public void add(int index, Sprite element) {
-        if (index < 0 || index > size + 1 || index > capacity)
-            throw new IndexOutOfBoundsException();
-        if (index < size) {
-            // shift elements to right
-            System.arraycopy(
-                    fdata, FDATA_ROWS * index,
-                    fdata, FDATA_ROWS * (index + 1),
-                    FDATA_ROWS * (size - index));
-            System.arraycopy(
-                    odata, ODATA_ROWS * index,
-                    odata, ODATA_ROWS * (index + 1),
-                    ODATA_ROWS * (size - index));
-            size += 1;
-        } else if (index == size) {
-            size += 1;
-        }
-        set(index, element);
+    public void clear() {
+        size = 0;
     }
 
     @Override
@@ -80,40 +26,64 @@ public class SpriteList extends AbstractList<SpriteList.Sprite> {
         return size;
     }
 
-    public void drawAll() {
-        for (var sprite : this)
-            sprite.draw();
+    @Override
+    public boolean add(SpriteData data) {
+        int index = size();
+        ++size;
+        floatData[FLOATSTRIDE * index] = data.x;
+        floatData[FLOATSTRIDE * index + 1] = data.y;
+        floatData[FLOATSTRIDE * index + 2] = data.w;
+        floatData[FLOATSTRIDE * index + 3] = data.h;
+        floatData[FLOATSTRIDE * index + 4] = data.ox;
+        floatData[FLOATSTRIDE * index + 5] = data.oy;
+        floatData[FLOATSTRIDE * index + 6] = data.r;
+        objectData[OBJECTSTRIDE * index] = data.texture;
+        objectData[OBJECTSTRIDE * index + 1] = data.source;
+        objectData[OBJECTSTRIDE * index + 2] = data.color;
+        return true;
     }
 
-    public void drawAllInOrder(Comparator<Sprite> comparator) {
-        if (!drawCacheValid) {
-            drawCache = this.toArray(drawCache);
-            Arrays.sort(drawCache, comparator);
-            drawCacheValid = true;
-        }
-        for (var sprite : drawCache) {
-            sprite.draw();
+    @Override
+    public SpriteData get(int index) {
+        return new SpriteData(
+                floatData[FLOATSTRIDE * index],
+                floatData[FLOATSTRIDE * index + 1],
+                floatData[FLOATSTRIDE * index + 2],
+                floatData[FLOATSTRIDE * index + 3],
+                floatData[FLOATSTRIDE * index + 4],
+                floatData[FLOATSTRIDE * index + 5],
+                floatData[FLOATSTRIDE * index + 6],
+                (Raylib.Texture) objectData[OBJECTSTRIDE * index],
+                (Raylib.Rectangle) objectData[OBJECTSTRIDE * index + 1],
+                (Raylib.Color) objectData[OBJECTSTRIDE * index + 2]);
+    }
+
+    void drawAll() {
+        var dest = new Raylib.Rectangle();
+        var origin = new Raylib.Vector2();
+
+        for (SpriteData data : this) {
+            dest.x(data.x)
+                    .y(data.y)
+                    .width(data.w)
+                    .height(data.h);
+            origin.x(data.ox)
+                    .y(data.oy);
+            Raylib.DrawTexturePro(data.texture, dest, data.source, origin, data.r, data.color);
         }
     }
 
-    public record Sprite(
-            float x, float y, float w, float h,
-            @NotNull Raylib.Color color,
-            @Nullable Raylib.Texture texture,
-            @NotNull Raylib.Rectangle rectangle) {
-        void draw() {
-            var destRectangle = new Raylib.Rectangle().x(x).y(y).width(w).height(h);
-            if (texture == null) {
-                Raylib.DrawRectanglePro(destRectangle, Raylib.Vector2Zero(), 0, color);
-            } else {
-                Raylib.DrawTexturePro(
-                        texture,
-                        destRectangle,
-                        rectangle,
-                        Raylib.Vector2Zero(), 0,
-                        color);
-            }
-        }
+    public record SpriteData(
+            float x,
+            float y,
+            float w,
+            float h,
+            float ox,
+            float oy,
+            float r,
+            Raylib.Texture texture,
+            Raylib.Rectangle source,
+            Raylib.Color color) {
     }
 
 }
