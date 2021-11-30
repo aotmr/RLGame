@@ -3,13 +3,12 @@ import com.raylib.Raylib;
 import java.util.AbstractList;
 
 public class SpriteList extends AbstractList<SpriteList.SpriteData> {
-    private static final int OBJECTSTRIDE = 3;
-    private static final int FLOATSTRIDE = 8;
-    int size;
-    int capacity;
+    private static final int OBJECTSTRIDE = ObjectItem.values().length;
+    private static final int FLOATSTRIDE = FloatItem.values().length;
     private final float[] floatData;
     private final Object[] objectData;
-
+    int size;
+    int capacity;
     SpriteList(int capacity) {
         this.capacity = capacity;
         floatData = new float[FLOATSTRIDE * capacity];
@@ -30,32 +29,32 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
     public boolean add(SpriteData data) {
         int index = size();
         ++size;
-        floatData[FLOATSTRIDE * index] = data.x;
-        floatData[FLOATSTRIDE * index + 1] = data.y;
-        floatData[FLOATSTRIDE * index + 2] = data.w;
-        floatData[FLOATSTRIDE * index + 3] = data.h;
-        floatData[FLOATSTRIDE * index + 4] = data.ox;
-        floatData[FLOATSTRIDE * index + 5] = data.oy;
-        floatData[FLOATSTRIDE * index + 6] = data.r;
-        objectData[OBJECTSTRIDE * index] = data.texture;
-        objectData[OBJECTSTRIDE * index + 1] = data.source;
-        objectData[OBJECTSTRIDE * index + 2] = data.color;
+        floatData[FLOATSTRIDE * index + FloatItem.X.ordinal()] = data.x;
+        floatData[FLOATSTRIDE * index + FloatItem.Y.ordinal()] = data.y;
+        floatData[FLOATSTRIDE * index + FloatItem.Width.ordinal()] = data.w;
+        floatData[FLOATSTRIDE * index + FloatItem.Height.ordinal()] = data.h;
+        floatData[FLOATSTRIDE * index + FloatItem.OriginX.ordinal()] = data.ox;
+        floatData[FLOATSTRIDE * index + FloatItem.OriginY.ordinal()] = data.oy;
+        floatData[FLOATSTRIDE * index + FloatItem.Rot.ordinal()] = data.r;
+        objectData[OBJECTSTRIDE * index + ObjectItem.Texture.ordinal()] = data.texture;
+        objectData[OBJECTSTRIDE * index + ObjectItem.Source.ordinal()] = data.source;
+        objectData[OBJECTSTRIDE * index + ObjectItem.Color.ordinal()] = data.color;
         return true;
     }
 
     @Override
     public SpriteData get(int index) {
         return new SpriteData(
-                floatData[FLOATSTRIDE * index],
-                floatData[FLOATSTRIDE * index + 1],
-                floatData[FLOATSTRIDE * index + 2],
-                floatData[FLOATSTRIDE * index + 3],
-                floatData[FLOATSTRIDE * index + 4],
-                floatData[FLOATSTRIDE * index + 5],
-                floatData[FLOATSTRIDE * index + 6],
-                (Raylib.Texture) objectData[OBJECTSTRIDE * index],
-                (Raylib.Rectangle) objectData[OBJECTSTRIDE * index + 1],
-                (Raylib.Color) objectData[OBJECTSTRIDE * index + 2]);
+                floatData[FLOATSTRIDE * index + FloatItem.X.ordinal()],
+                floatData[FLOATSTRIDE * index + FloatItem.Y.ordinal()],
+                floatData[FLOATSTRIDE * index + FloatItem.Width.ordinal()],
+                floatData[FLOATSTRIDE * index + FloatItem.Height.ordinal()],
+                floatData[FLOATSTRIDE * index + FloatItem.OriginX.ordinal()],
+                floatData[FLOATSTRIDE * index + FloatItem.OriginY.ordinal()],
+                floatData[FLOATSTRIDE * index + FloatItem.Rot.ordinal()],
+                (Raylib.Texture) objectData[OBJECTSTRIDE * index + ObjectItem.Texture.ordinal()],
+                (Raylib.Rectangle) objectData[OBJECTSTRIDE * index + ObjectItem.Source.ordinal()],
+                (Raylib.Color) objectData[OBJECTSTRIDE * index + ObjectItem.Color.ordinal()]);
     }
 
     void drawAll() {
@@ -71,6 +70,22 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
                     .y(data.oy);
             Raylib.DrawTexturePro(data.texture, dest, data.source, origin, data.r, data.color);
         }
+    }
+
+    private enum FloatItem {
+        X,
+        Y,
+        Width,
+        Height,
+        OriginX,
+        OriginY,
+        Rot,
+    }
+
+    private enum ObjectItem {
+        Texture,
+        Source,
+        Color,
     }
 
     public record SpriteData(
