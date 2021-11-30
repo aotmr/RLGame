@@ -1,6 +1,8 @@
 import java.util.AbstractList;
 
-@SuppressWarnings("PointlessArithmeticExpression")
+/**
+ * A list of entities backed by contiguous primitive arrays, where possible.
+ */
 public class EntityList extends AbstractList<Entity> {
     private static final int FLOATSTRIDE = FloatItem.values().length;
     private static final int OBJECTSTRIDE = ObjectItem.values().length;
@@ -14,11 +16,6 @@ public class EntityList extends AbstractList<Entity> {
         this.size = 0;
         this.floatData = new float[FLOATSTRIDE * capacity];
         this.objectData = new Object[OBJECTSTRIDE * capacity];
-    }
-
-    @Override
-    public Entity get(int index) {
-        return new EntityProxy(this, index);
     }
 
     private void set(int index, ObjectItem item, Object value) {
@@ -37,25 +34,32 @@ public class EntityList extends AbstractList<Entity> {
         return floatData[FLOATSTRIDE * index + item.ordinal()];
     }
 
-    @Override
-    public int size() {
-        return size;
-    }
-
     public Entity create(String name) {
+        if (size >= capacity)
+            throw new IndexOutOfBoundsException();
         int index = size++;
         set(index, ObjectItem.Name, name);
         return get(index);
     }
 
-    enum FloatItem {
+    @Override
+    public Entity get(int index) {
+        return new EntityProxy(this, index);
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    private enum FloatItem {
         X,
         Y,
         VelocityX,
         VelocityY,
     }
 
-    enum ObjectItem {
+    private enum ObjectItem {
         Name,
     }
 

@@ -1,3 +1,6 @@
+/**
+ * Abstract element of an EntityList; this could be a proxy object.
+ */
 public abstract class Entity {
     abstract String getName();
     abstract float getX();
