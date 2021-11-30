@@ -1,3 +1,7 @@
+package entity;
+
+import draw.SpriteList;
+
 public class EntityMgr {
     public final int CAPACITY = 100;
     private final EntityList entities = new EntityList(CAPACITY);

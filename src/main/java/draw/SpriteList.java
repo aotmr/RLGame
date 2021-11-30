@@ -1,3 +1,5 @@
+package draw;
+
 import com.raylib.Raylib;
 
 import java.util.AbstractList;
@@ -9,7 +11,7 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
     private final Object[] objectData;
     int size;
     int capacity;
-    SpriteList(int capacity) {
+    public SpriteList(int capacity) {
         this.capacity = capacity;
         floatData = new float[FLOATSTRIDE * capacity];
         objectData = new Object[OBJECTSTRIDE * capacity];
@@ -57,7 +59,7 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
                 (Raylib.Color) objectData[OBJECTSTRIDE * index + ObjectItem.Color.ordinal()]);
     }
 
-    void drawAll() {
+    public void drawAll() {
         var dest = new Raylib.Rectangle();
         var origin = new Raylib.Vector2();
 

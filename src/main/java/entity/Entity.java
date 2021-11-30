@@ -1,10 +1,12 @@
+package entity;
+
+import draw.SpriteList;
+
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
 import java.util.function.ObjDoubleConsumer;
 
 /**
- * Abstract element of an EntityList; this could be a proxy object.
+ * Abstract element of an entity.EntityList; this could be a proxy object.
  */
 public abstract class Entity {
     public abstract String getName();
@@ -73,7 +75,7 @@ public abstract class Entity {
 
     @Override
     public String toString() {
-        return "Entity{" +
+        return "entity.Entity{" +
                 "name=" + getName() +
                 ", x=" + getX() +
                 ", y=" + getY() +

@@ -1,3 +1,7 @@
+package entity;
+
+import draw.SpriteList;
+
 import java.util.AbstractList;
 import java.util.function.BiConsumer;
 import java.util.function.ObjDoubleConsumer;
@@ -13,7 +17,7 @@ public class EntityList extends AbstractList<Entity> {
     private final int capacity;
     private int size;
 
-    EntityList(int capacity) {
+    public EntityList(int capacity) {
         this.capacity = capacity;
         this.size = 0;
         this.floatData = new float[FLOATSTRIDE * capacity];
@@ -42,6 +46,11 @@ public class EntityList extends AbstractList<Entity> {
         int index = size++;
         set(index, ObjectItem.Name, name);
         return get(index);
+    }
+
+    @Override
+    public void clear() {
+        this.size = 0;
     }
 
     @Override
