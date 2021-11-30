@@ -1,4 +1,6 @@
 import java.util.AbstractList;
+import java.util.function.BiConsumer;
+import java.util.function.ObjDoubleConsumer;
 
 /**
  * A list of entities backed by contiguous primitive arrays, where possible.
@@ -61,6 +63,8 @@ public class EntityList extends AbstractList<Entity> {
 
     private enum ObjectItem {
         Name,
+        OnUpdate,
+        OnDraw,
     }
 
     private static final class EntityProxy extends Entity {
@@ -75,6 +79,26 @@ public class EntityList extends AbstractList<Entity> {
         @Override
         public String getName() {
             return (String) parent.get(index, ObjectItem.Name);
+        }
+
+        @Override
+        public ObjDoubleConsumer<Entity> getOnUpdate() {
+            return (ObjDoubleConsumer<Entity>) parent.get(index, ObjectItem.OnUpdate);
+        }
+
+        @Override
+        public void setOnUpdate(ObjDoubleConsumer<Entity> func) {
+            parent.set(index, ObjectItem.OnUpdate, func);
+        }
+
+        @Override
+        public BiConsumer<Entity, SpriteList> getOnDraw() {
+            return (BiConsumer<Entity, SpriteList>) parent.get(index, ObjectItem.OnDraw);
+        }
+
+        @Override
+        public void setOnDraw(BiConsumer<Entity, SpriteList> func) {
+            parent.set(index, ObjectItem.OnUpdate, func);
         }
 
         @Override
