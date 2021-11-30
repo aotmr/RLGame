@@ -5,10 +5,7 @@ public class EntityMgr {
     public void updateAll(float dt) {
         for (var e:entities) {
             e.doUpdate(dt);
-
-            var vx = e.getVelocityX();
-            var vy = e.getVelocityY();
-            e.moveBy(vx * dt, vy * dt);
+            e.updatePosition(dt);
         }
     }
 

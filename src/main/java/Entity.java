@@ -9,9 +9,9 @@ import java.util.function.ObjDoubleConsumer;
 public abstract class Entity {
     public abstract String getName();
 
-    public abstract void setOnUpdate(ObjDoubleConsumer<Entity> func);
+    public abstract Entity setOnUpdate(ObjDoubleConsumer<Entity> func);
 
-    public abstract void setOnDraw(BiConsumer<Entity, SpriteList> func);
+    public abstract Entity setOnDraw(BiConsumer<Entity, SpriteList> func);
 
     public abstract ObjDoubleConsumer<Entity> getOnUpdate();
 
@@ -19,19 +19,19 @@ public abstract class Entity {
 
     public abstract float getX();
 
-    public abstract void setX(float value);
+    public abstract Entity setX(float value);
 
     public abstract float getY();
 
-    public abstract void setY(float value);
+    public abstract Entity setY(float value);
 
     public abstract float getVelocityX();
 
-    public abstract void setVelocityX(float value);
+    public abstract Entity setVelocityX(float value);
 
     public abstract float getVelocityY();
 
-    public abstract void setVelocityY(float value);
+    public abstract Entity setVelocityY(float value);
 
     public void doUpdate(double dt) {
         getOnUpdate().accept(this, dt);
@@ -41,25 +41,34 @@ public abstract class Entity {
         getOnDraw().accept(this, outSprites);
     }
 
-    public void moveBy(float dx, float dy) {
+    public Entity moveBy(float dx, float dy) {
         setX(getX() + dx);
         setY(getY() + dy);
+        return this;
     }
 
-    public void accelBy(float ax, float ay) {
+    public Entity accelBy(float ax, float ay) {
         setVelocityX(getVelocityX() + ax);
         setVelocityY(getVelocityY() + ay);
+        return this;
     }
 
-    public void clampVelocity(float limit) {
+    public Entity clampVelocity(float limit) {
         float vx = getVelocityX();
         float vy = getVelocityY();
         float norm = (float)Math.sqrt(vx * vx + vy * vy);
-        if (norm <= 0.001 || norm <= limit)
-            return;
-        float scale = limit / norm;
-        setVelocityX(vx * scale);
-        setVelocityY(vy * scale);
+        if (norm >= 0.001 && norm >= limit) {
+            float scale = limit / norm;
+            setVelocityX(vx * scale);
+            setVelocityY(vy * scale);
+        }
+        return this;
+    }
+
+    public void updatePosition(float dt) {
+        var vx = getVelocityX();
+        var vy = getVelocityY();
+        moveBy(vx * dt, vy * dt);
     }
 
     @Override

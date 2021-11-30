@@ -87,8 +87,9 @@ public class EntityList extends AbstractList<Entity> {
         }
 
         @Override
-        public void setOnUpdate(ObjDoubleConsumer<Entity> func) {
+        public Entity setOnUpdate(ObjDoubleConsumer<Entity> func) {
             parent.set(index, ObjectItem.OnUpdate, func);
+            return this;
         }
 
         @Override
@@ -97,8 +98,9 @@ public class EntityList extends AbstractList<Entity> {
         }
 
         @Override
-        public void setOnDraw(BiConsumer<Entity, SpriteList> func) {
+        public Entity setOnDraw(BiConsumer<Entity, SpriteList> func) {
             parent.set(index, ObjectItem.OnUpdate, func);
+            return this;
         }
 
         @Override
@@ -107,8 +109,9 @@ public class EntityList extends AbstractList<Entity> {
         }
 
         @Override
-        public void setX(float value) {
+        public Entity setX(float value) {
             parent.set(index, FloatItem.X, value);
+            return this;
         }
 
         @Override
@@ -117,8 +120,9 @@ public class EntityList extends AbstractList<Entity> {
         }
 
         @Override
-        public void setY(float value) {
+        public Entity setY(float value) {
             parent.set(index, FloatItem.Y, value);
+            return this;
         }
 
         @Override
@@ -127,8 +131,9 @@ public class EntityList extends AbstractList<Entity> {
         }
 
         @Override
-        public void setVelocityX(float value) {
+        public Entity setVelocityX(float value) {
             parent.floatData[FLOATSTRIDE * index + 2] = value;
+            return this;
         }
 
         @Override
@@ -137,8 +142,9 @@ public class EntityList extends AbstractList<Entity> {
         }
 
         @Override
-        public void setVelocityY(float value) {
+        public Entity setVelocityY(float value) {
             parent.floatData[FLOATSTRIDE * index + 3] = value;
+            return this;
         }
     }
 
