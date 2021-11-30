@@ -1,14 +1,12 @@
 import java.util.AbstractList;
-import java.util.Objects;
 
+@SuppressWarnings("PointlessArithmeticExpression")
 public class EntityList extends AbstractList<Entity> {
-    private static final int FLOATSTRIDE = 4;
-    private static final int OBJECTSTRIDE = 2;
-
+    private static final int FLOATSTRIDE = FloatItem.values().length;
+    private static final int OBJECTSTRIDE = ObjectItem.values().length;
     private final float[] floatData;
     private final Object[] objectData;
-
-    private int capacity;
+    private final int capacity;
     private int size;
 
     EntityList(int capacity) {
@@ -23,12 +21,44 @@ public class EntityList extends AbstractList<Entity> {
         return new EntityProxy(this, index);
     }
 
+    private void set(int index, ObjectItem item, Object value) {
+        objectData[OBJECTSTRIDE * index + item.ordinal()] = value;
+    }
+
+    private void set(int index, FloatItem item, float value) {
+        floatData[FLOATSTRIDE * index + item.ordinal()] = value;
+    }
+
+    private Object get(int index, ObjectItem item) {
+        return objectData[OBJECTSTRIDE * index + item.ordinal()];
+    }
+
+    private float get(int index, FloatItem item) {
+        return floatData[FLOATSTRIDE * index + item.ordinal()];
+    }
+
     @Override
     public int size() {
         return size;
     }
 
-    @SuppressWarnings("PointlessArithmeticExpression")
+    public Entity create(String name) {
+        int index = size++;
+        set(index, ObjectItem.Name, name);
+        return get(index);
+    }
+
+    enum FloatItem {
+        X,
+        Y,
+        VelocityX,
+        VelocityY,
+    }
+
+    enum ObjectItem {
+        Name,
+    }
+
     private static final class EntityProxy extends Entity {
         private final EntityList parent;
         private final int index;
@@ -40,27 +70,27 @@ public class EntityList extends AbstractList<Entity> {
 
         @Override
         public String getName() {
-            return (String) parent.objectData[OBJECTSTRIDE * index + 0];
+            return (String) parent.get(index, ObjectItem.Name);
         }
 
         @Override
         public float getX() {
-            return parent.floatData[FLOATSTRIDE * index + 0];
+            return parent.get(index, FloatItem.X);
         }
 
         @Override
         public void setX(float value) {
-            parent.floatData[FLOATSTRIDE * index + 0] = value;
+            parent.set(index, FloatItem.X, value);
         }
 
         @Override
         public float getY() {
-            return parent.floatData[FLOATSTRIDE * index + 1];
+            return parent.get(index, FloatItem.Y);
         }
 
         @Override
         public void setY(float value) {
-            parent.floatData[FLOATSTRIDE * index + 1] = value;
+            parent.set(index, FloatItem.Y, value);
         }
 
         @Override
