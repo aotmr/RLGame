@@ -12,13 +12,17 @@ public class GameState implements State {
 
     @Override
     public void setup() {
-        Player.create(entities);
+        Player.create(entities)
+                .setX(25)
+                .setY(37)
+                .setVelocityX(8)
+                .setVelocityY(3);
     }
 
     @Override
     public void update(float dt) {
         for (var e : entities) {
-            e.updatePosition(dt);
+            e.move(dt);
             e.doUpdate(dt);
         }
     }

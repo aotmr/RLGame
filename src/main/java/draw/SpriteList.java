@@ -70,7 +70,8 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
                     .height(data.height);
             origin.x(data.offsetX)
                     .y(data.offsetY);
-            Raylib.DrawTexturePro(data.texture, dest, data.source, origin, data.rot, data.color);
+//            Raylib.DrawTexturePro(data.texture, dest, data.source, origin, data.rot, data.color);
+            Raylib.DrawRectanglePro(dest, origin, data.rot, data.color);
         }
     }
 
