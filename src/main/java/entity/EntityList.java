@@ -45,6 +45,7 @@ public class EntityList extends AbstractList<Entity> {
             throw new IndexOutOfBoundsException();
         int index = size++;
         set(index, ObjectItem.Name, name);
+
         return get(index);
     }
 
@@ -108,7 +109,7 @@ public class EntityList extends AbstractList<Entity> {
 
         @Override
         public Entity setOnDraw(BiConsumer<Entity, SpriteList> func) {
-            parent.set(index, ObjectItem.OnUpdate, func);
+            parent.set(index, ObjectItem.OnDraw, func);
             return this;
         }
 
