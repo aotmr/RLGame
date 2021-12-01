@@ -4,10 +4,16 @@ import com.raylib.Jaylib;
 import com.raylib.Raylib;
 import draw.SpriteList;
 import entity.EntityList;
+import entity.Player;
 
 public class GameState implements State {
     EntityList entities = new EntityList(10);
     SpriteList sprites = new SpriteList(30);
+
+    @Override
+    public void setup() {
+        Player.create(entities);
+    }
 
     @Override
     public void update(float dt) {
