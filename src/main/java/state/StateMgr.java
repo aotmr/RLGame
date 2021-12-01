@@ -5,7 +5,8 @@ public class StateMgr {
     private State next = null;
 
     public StateMgr(State start) {
-        this.next = start;
+        this.curr = start;
+        this.curr.setup();
     }
 
     public void setNextState(State next) {
@@ -14,7 +15,7 @@ public class StateMgr {
 
     public void update(float dt) {
         if (next != null) {
-            next.cleanup();
+            curr.cleanup();
             curr = next;
             curr.setup();
         }
