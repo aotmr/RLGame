@@ -26,6 +26,7 @@ public class Player {
         if (keyUp) dirY -= 1;
         if (keyDown) dirY += 1;
 
+        // TODO: The physics here are iffy. I'm almost certain "friction" should relate to the time step.
         if (dirX != 0 || dirY != 0) {
             float rnorm = 1 / (float)Math.sqrt(dirX * dirX + dirY * dirY);
             dirX *= rnorm;
