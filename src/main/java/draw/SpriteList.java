@@ -33,11 +33,11 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
         ++size;
         floatData[FLOATSTRIDE * index + FloatItem.X.ordinal()] = data.x;
         floatData[FLOATSTRIDE * index + FloatItem.Y.ordinal()] = data.y;
-        floatData[FLOATSTRIDE * index + FloatItem.Width.ordinal()] = data.w;
-        floatData[FLOATSTRIDE * index + FloatItem.Height.ordinal()] = data.h;
-        floatData[FLOATSTRIDE * index + FloatItem.OriginX.ordinal()] = data.ox;
-        floatData[FLOATSTRIDE * index + FloatItem.OriginY.ordinal()] = data.oy;
-        floatData[FLOATSTRIDE * index + FloatItem.Rot.ordinal()] = data.r;
+        floatData[FLOATSTRIDE * index + FloatItem.Width.ordinal()] = data.width;
+        floatData[FLOATSTRIDE * index + FloatItem.Height.ordinal()] = data.height;
+        floatData[FLOATSTRIDE * index + FloatItem.OriginX.ordinal()] = data.offsetX;
+        floatData[FLOATSTRIDE * index + FloatItem.OriginY.ordinal()] = data.offsetY;
+        floatData[FLOATSTRIDE * index + FloatItem.Rot.ordinal()] = data.rot;
         objectData[OBJECTSTRIDE * index + ObjectItem.Texture.ordinal()] = data.texture;
         objectData[OBJECTSTRIDE * index + ObjectItem.Source.ordinal()] = data.source;
         objectData[OBJECTSTRIDE * index + ObjectItem.Color.ordinal()] = data.color;
@@ -66,11 +66,11 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
         for (SpriteData data : this) {
             dest.x(data.x)
                     .y(data.y)
-                    .width(data.w)
-                    .height(data.h);
-            origin.x(data.ox)
-                    .y(data.oy);
-            Raylib.DrawTexturePro(data.texture, dest, data.source, origin, data.r, data.color);
+                    .width(data.width)
+                    .height(data.height);
+            origin.x(data.offsetX)
+                    .y(data.offsetY);
+            Raylib.DrawTexturePro(data.texture, dest, data.source, origin, data.rot, data.color);
         }
     }
 
@@ -93,11 +93,11 @@ public class SpriteList extends AbstractList<SpriteList.SpriteData> {
     public record SpriteData(
             float x,
             float y,
-            float w,
-            float h,
-            float ox,
-            float oy,
-            float r,
+            float width,
+            float height,
+            float offsetX,
+            float offsetY,
+            float rot,
             Raylib.Texture texture,
             Raylib.Rectangle source,
             Raylib.Color color) {
