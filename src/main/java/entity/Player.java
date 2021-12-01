@@ -8,20 +8,25 @@ public class Player {
         throw new AssertionError("Player class may not be instantiated");
     }
 
+    private static void update(Entity entity, double dt) {
+
+    }
+
+    private static void draw(Entity entity, SpriteList spriteList) {
+        spriteList.add(new SpriteList.SpriteData(
+                entity.getX(),
+                entity.getY(),
+                20, 20,
+                0, 0,
+                0,
+                null,
+                null,
+                Jaylib.WHITE));
+    }
+
     public static Entity create(EntityList parent) {
         return parent.create("Player")
-                .setOnUpdate((entity, dt) -> {
-                })
-                .setOnDraw((entity, spriteList) -> {
-                    spriteList.add(new SpriteList.SpriteData(
-                            entity.getX(),
-                            entity.getY(),
-                            20, 20,
-                            0, 0,
-                            0,
-                            null,
-                            null,
-                            Jaylib.WHITE));
-                });
+                .setOnUpdate(Player::update)
+                .setOnDraw(Player::draw);
     }
 }
