@@ -36,11 +36,13 @@ public abstract class Entity {
     public abstract Entity setVelocityY(float value);
 
     public void doUpdate(double dt) {
-        getOnUpdate().accept(this, dt);
+        var func = getOnUpdate();
+        if (func != null) func.accept(this, dt);
     }
 
     public void doDraw(SpriteList outSprites) {
-        getOnDraw().accept(this, outSprites);
+        var func = getOnDraw();
+        if (func != null) func.accept(this, outSprites);
     }
 
     public Entity moveBy(float dx, float dy) {
@@ -58,7 +60,7 @@ public abstract class Entity {
     public Entity clampVelocity(float limit) {
         float vx = getVelocityX();
         float vy = getVelocityY();
-        float norm = (float)Math.sqrt(vx * vx + vy * vy);
+        float norm = (float) Math.sqrt(vx * vx + vy * vy);
         if (norm >= 0.001 && norm >= limit) {
             float scale = limit / norm;
             setVelocityX(vx * scale);
@@ -67,7 +69,7 @@ public abstract class Entity {
         return this;
     }
 
-    public void updatePosition(float dt) {
+    public void move(float dt) {
         var vx = getVelocityX();
         var vy = getVelocityY();
         moveBy(vx * dt, vy * dt);
