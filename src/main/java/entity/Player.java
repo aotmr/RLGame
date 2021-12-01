@@ -6,6 +6,8 @@ public class Player {
     }
 
     public static Entity create(EntityList parent) {
-        return parent.create("Player");
+        return parent.create("Player")
+                .setOnUpdate((dt, e) -> {})
+                .setOnDraw((e, sl) -> {});
     }
 }
